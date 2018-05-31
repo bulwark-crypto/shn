@@ -1,0 +1,1 @@
+STAKINGADDRESS=$(bulwark-cli getnewaddress)
