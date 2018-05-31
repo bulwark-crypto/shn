@@ -22,10 +22,12 @@ systemctl start bulwarkd
 bulwark-cli walletpassphrase $ENCRYPTIONKEY 9999999999
 
 #End message with further instructions
-echo "Your wallet has now been set up for staking, please send the coins you wish to stake to $STAKINGADDRESS . Once your wallet is synced your coins should begin staking automatically.
+cat << EOL
+Your wallet has now been set up for staking, please send the coins you wish to stake to ${STAKINGADDRESS}. Once your wallet is synced your coins should begin staking automatically.
 
-To check on the status of your staked coins you can run "bulwark-cli getstakingstatus" and "bulwark-cli getinfo". To see when you receive your rewards from your QT wallet, you can also add a watch-only address from your debug console using "importaddress $STAKINGADDRESS StakingRewards".
+To check on the status of your staked coins you can run "bulwark-cli getstakingstatus" and "bulwark-cli getinfo". To see when you receive your rewards from your QT wallet, you can also add a watch-only address from your debug console using "importaddress ${STAKINGADDRESS} StakingRewards".
 
-Finally, to send the coins elsewhere if you no longer wish to stake them, use "bulwark-cli sendfrom $STAKINGADDRESS <Address You Want To Send To> <Amount>" which will return the transaction hash.
+Finally, to send the coins elsewhere if you no longer wish to stake them, use "bulwark-cli sendfrom ${STAKINGADDRESS} <Address You Want To Send To> <Amount>" which will return the transaction hash.
 
-All of these instruction will be available from the Github page, and in the Bulwark Discord/Telegram on request!"
+All of these instruction will be available from the Github page, and in the Bulwark Discord/Telegram on request!
+EOL
