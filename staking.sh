@@ -8,7 +8,7 @@ else
 	echo "Setting Up Staking Address.."
 fi
 
-#Adds a line to bulwark.conf to instruct the wallet to stake
+#Adds a line to bulwark.conf to instruct the wallet to stake, if the line does not already exist.
 if [ "tail ~/.bulwark/bulwark.conf" != "staking=1" ]; then
 	echo "staking=1" >> ~/.bulwark/bulwark.conf
 else
