@@ -18,15 +18,15 @@
 ## Requirements
 To connect your node, you need either a network router with a free RJ-45 port and an ethernet cable or a router running a 2.4Ghz Wi-fi network. If you want to connect via Wi-fi, you will also need either a monitor that supports HDMI (along with a HDMI cable) and a keyboard, or a microSD card reader that works with your computer.
 
-## Generating your Masternode Output	
-	
-Run this command to get your output information:	
+## Generating your Masternode Output
 
-```bash	
-masternode outputs	
-```	
-	
--Copy both the transaction id and output id to a text file.	
+Run this command to get your output information:
+
+```bash
+masternode outputs
+```
+
+-Copy both the transaction id and output id to a text file.
 
 ## Connecting your SHN to your network
 To connect your home node, you have two options: ethernet and Wi-fi.
@@ -123,3 +123,39 @@ To update your Homenode to the newest version of the Bulwark Protocol simply pas
 ```
 bash <( curl https://raw.githubusercontent.com/bulwark-crypto/shn/master/update.sh )
 ```
+=======
+## Staking Setup
+
+Once your bulwarkd service is completely synced, you can run the following command to create a wallet address for staking:
+
+```
+bash <( curl https://raw.githubusercontent.com/KaneoHunter/shn/staking/staking.sh )
+```
+
+This script will ask for a password, create a fresh address, encrypt the address and wallet with that password, enable staking, start bulwarkd again (without interrupting your Masternode), and finally unlock the wallet.
+
+You can then send any amount of coins to this address, and it will be staked automatically until removed.
+
+After the script has been run, you can use:
+
+```
+bulwark-cli getstakingstatus` and `bulwark-cli getinfo
+```
+
+to check on the current status of whether staking is working correctly.
+
+Furthermore, the script will output a address, and encryption key, which can be imported to your QT wallet using the BIP38 tool. This will allow you to use the address as part of your usual wallet while allowing the funds to be staked while the wallet is closed.
+
+Alternatively, if you want to ensure your coins stay in the right address during use, you can use the address as "watch-only" by entering the following command in to your QT wallet debug console.
+
+```
+importaddress ${STAKINGADDRESS} StakingRewards
+```
+
+Finally, to remove your coins from this address, you can either add the address as described above with the BIP38 tool and send the funds to a new address via coin control, or you can use the below RPC command to create and send a transaction to a new address:
+
+```
+bulwark-cli sendfrom <Address You Are Staking From> <Address You Are Sending To> <Amount To Send>
+```
+
+If you have any further questions or issues, send a message to us in the Discord or Telegram and we will be happy to help.
