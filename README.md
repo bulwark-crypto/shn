@@ -13,6 +13,7 @@
   * [macOS](#macos)
   * [Linux](#linux)
 - [Installation](#installation)
+  * [Staking](#staking setup)
 - [Updates](#updates)
 
 ## Requirements
