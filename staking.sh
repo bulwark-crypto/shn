@@ -9,23 +9,28 @@ else
 fi
 
 #Adds a line to bulwark.conf to instruct the wallet to stake
-echo "staking=1" >> ~/.bulwark/bulwark.conf
+if [ "tail ~/.bulwark/bulwark.conf" != "staking=1" ]; then
+	echo "staking=1" >> ~/.bulwark/bulwark.conf
+else
+	echo "Staking Already Active"
+fi
 
 #generates new address and assigns it a variable
 STAKINGADDRESS=$(bulwark-cli getnewaddress)
 
 #Ask for a password and apply it to a variable
-read -e -p "Please enter a password to encrypt your new address/wallet with (KEEP THIS SAFE) : " ENCRYPTIONKEY
+read -e -p "Please enter a password to encrypt your new address/wallet with (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : " ENCRYPTIONKEY
 
 #Encrypt the new address with the requested password
 BIP38=$(bulwark-cli bip38encrypt $STAKINGADDRESS $ENCRYPTIONKEY)
-echo "$BIP38"
+echo "Address successfully encrypted!"
 
 #Encrypt the wallet with the same password
 bulwark-cli encryptwallet $ENCRYPTIONKEY
+echo "Wallet successfully encrypted!"
 
 #Wait for bulwarkd to close down after wallet encryption
-echo "Waiting for bulwarkd to shut down..."
+echo "Waiting for bulwarkd to restart..."
 until  ! systemctl is-active --quiet bulwarkd; do
     sleep 0.5
 done
