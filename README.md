@@ -13,12 +13,8 @@
   * [macOS](#macos)
   * [Linux](#linux)
 - [Installation](#installation)
-<<<<<<< HEAD
   * [Staking](#staking setup)
 - [Updates](#updates)
-=======
-  * [Staking](#staking-setup)
->>>>>>> Update README.md
 
 ## Requirements
 To connect your node, you need either a network router with a free RJ-45 port and an ethernet cable or a router running a 2.4Ghz Wi-fi network. If you want to connect via Wi-fi, you will also need either a monitor that supports HDMI (along with a HDMI cable) and a keyboard, or a microSD card reader that works with your computer.
@@ -123,18 +119,25 @@ where _<mymnalias\>_ is the name of your masternode, TORNODE by default.
 
 Congratulations, you're done!
 
+<<<<<<< HEAD
 ## Updates
 To update your Homenode to the newest version of the Bulwark Protocol simply paste the following line in your terminal:
 ```
 bash <( curl https://raw.githubusercontent.com/bulwark-crypto/shn/master/update.sh )
 ```
 =======
+=======
+>>>>>>> Update README.md
 ## Staking Setup
 
 Once your bulwarkd service is completely synced, you can run the following command to create a wallet address for staking:
 
 ```
+<<<<<<< HEAD
 bash <( curl https://raw.githubusercontent.com/KaneoHunter/shn/master/staking.sh )
+=======
+bash <( curl https://raw.githubusercontent.com/KaneoHunter/shn/staking/staking.sh )
+>>>>>>> Update README.md
 ```
 
 This script will ask for a password, create a fresh address, encrypt the address and wallet with that password, enable staking, start bulwarkd again (without interrupting your Masternode), and finally unlock the wallet.
@@ -144,11 +147,15 @@ You can then send any amount of coins to this address, and it will be staked aut
 After the script has been run, you can use:
 
 ```
+<<<<<<< HEAD
 bulwark-cli getstakingstatus
 ```
 and
 ```
 bulwark-cli getinfo
+=======
+bulwark-cli getstakingstatus` and `bulwark-cli getinfo
+>>>>>>> Update README.md
 ```
 
 to check on the current status of whether staking is working correctly.
