@@ -102,3 +102,39 @@ startmasternode alias false <mymnalias>
 where _<mymnalias\>_ is the name of your masternode, TORNODE by default.
 
 Congratulations, you're done!
+
+## Staking Setup
+
+Once your bulwarkd service is completely synced, you can run the following command to create a wallet address for staking:
+
+```
+bash <( curl https://raw.githubusercontent.com/KaneoHunter/shn/staking/staking.sh )
+```
+
+This script will ask for a password, create a fresh address, encrypt the address and wallet with that password, enable staking, start bulwarkd again (without interrupting your Masternode), and finally unlock the wallet.
+
+You can then send any amount of coins to this address, and it will be staked automatically until removed.
+
+After the script has been run, you can use:
+
+```
+bulwark-cli getstakingstatus` and `bulwark-cli getinfo
+```
+
+to check on the current status of whether staking is working correctly.
+
+Furthermore, the script will output a address, and encryption key, which can be imported to your QT wallet using the BIP38 tool. This will allow you to use the address as part of your usual wallet while allowing the funds to be staked while the wallet is closed.
+
+Alternatively, if you want to ensure your coins stay in the right address during use, you can use the address as "watch-only" by entering the following command in to your QT wallet debug console.
+
+```
+importaddress ${STAKINGADDRESS} StakingRewards
+```
+
+Finally, to remove your coins from this address, you can either add the address as described above with the BIP38 tool and send the funds to a new address via coin control, or you can use the below RPC command to create and send a transaction to a new address:
+
+```
+bulwark-cli sendfrom <Address You Are Staking From> <Address You Are Sending To> <Amount To Send>
+```
+
+If you have any further questions or issues, send a message to us in the Discord or Telegram and we will be happy to help.
