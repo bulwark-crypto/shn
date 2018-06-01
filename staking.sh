@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#Ensure bulwarkd is active
+if systemctl is-active --quiet bulwarkd; then
+	systemctl start bulwarkd
+	echo "Setting Up Staking Address.."
+else
+	echo "Setting Up Staking Address.."
+fi
+
 #Adds a line to bulwark.conf to instruct the wallet to stake
 echo "staking=1" >> ~/.bulwark/bulwark.conf
 
@@ -15,11 +23,17 @@ echo "$BIP38"
 
 #Encrypt the wallet with the same password
 bulwark-cli encryptwallet $ENCRYPTIONKEY
-sleep 5
-#After encryption, bulwarkd closes, we ensure it opens again
+
+#Wait for bulwarkd to close down after wallet encryption
+echo "Waiting for bulwarkd to shut down..."
+until  ! systemctl is-active --quiet bulwarkd; do
+    sleep 0.5
+done
+
+#Open up bulwarkd again
 systemctl start bulwarkd
 
-#Unlocks the wallet for a long time period.
+#Unlocks the wallet for a long time period
 bulwark-cli walletpassphrase $ENCRYPTIONKEY 9999999999
 
 #End message with further instructions
@@ -35,4 +49,7 @@ ${BIP38}
 Finally, to send the coins elsewhere if you no longer wish to stake them, use "bulwark-cli sendfrom ${STAKINGADDRESS} <Address You Want To Send To> <Amount>" which will return the transaction hash.
 
 All of these instruction will be available from the Github page, and in the Bulwark Discord/Telegram on request!
+
+https://github.com/KaneoHunter/shn/blob/master/README.md#staking-setup
+
 EOL
