@@ -15,7 +15,7 @@ echo "$BIP38"
 
 #Encrypt the wallet with the same password
 bulwark-cli encryptwallet $ENCRYPTIONKEY
-sleep 10
+sleep 5
 #After encryption, bulwarkd closes, we ensure it opens again
 systemctl start bulwarkd
 
