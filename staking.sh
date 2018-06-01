@@ -39,7 +39,7 @@ done
 systemctl start bulwarkd
 
 #Unlocks the wallet for a long time period
-bulwark-cli walletpassphrase $ENCRYPTIONKEY 9999999999
+bulwark-cli walletpassphrase $ENCRYPTIONKEY 9999999999 true
 
 #End message with further instructions
 cat << EOL
