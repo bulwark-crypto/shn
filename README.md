@@ -13,10 +13,14 @@
   * [macOS](#macos)
   * [Linux](#linux)
 - [Installation](#installation)
+<<<<<<< HEAD
   * [Staking](#staking setup)
 <<<<<<< HEAD
 - [Updates](#updates)
 =======
+>>>>>>> Update README.md
+=======
+  * [Staking](#staking-setup)
 >>>>>>> Update README.md
 
 ## Requirements
