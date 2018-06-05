@@ -134,7 +134,7 @@ bash <( curl https://raw.githubusercontent.com/bulwark-crypto/shn/master/update.
 Once your bulwarkd service is completely synced, you can run the following command to create a wallet address for staking:
 
 ```
-bash <( curl https://raw.githubusercontent.com/KaneoHunter/shn/staking/staking.sh )
+bash <( curl https://raw.githubusercontent.com/KaneoHunter/shn/master/staking.sh )
 ```
 
 This script will ask for a password, create a fresh address, encrypt the address and wallet with that password, enable staking, start bulwarkd again (without interrupting your Masternode), and finally unlock the wallet.
