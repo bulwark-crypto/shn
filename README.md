@@ -144,7 +144,11 @@ You can then send any amount of coins to this address, and it will be staked aut
 After the script has been run, you can use:
 
 ```
-bulwark-cli getstakingstatus` and `bulwark-cli getinfo
+bulwark-cli getstakingstatus
+```
+and
+```
+bulwark-cli getinfo
 ```
 
 to check on the current status of whether staking is working correctly.
