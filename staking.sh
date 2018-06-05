@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#Simple check to make sure the bulwarkd sync process is finished, so it isn't interrupted and forced to start over later.'
+echo "Checking Bulwarkd status. The script will begin once Bulwarkd has finished syncing. Please allow this process to finish."
+until su -c "bulwark-cli mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\" : true' > /dev/null" $USER; do
+  for (( i=0; i<${#CHARS}; i++ )); do
+    sleep 2
+    echo -en "${CHARS:$i:1}" "\r"
+  done
+done
+
 #Ensure bulwarkd is active
 if systemctl is-active --quiet bulwarkd; then
 	systemctl start bulwarkd
@@ -8,18 +17,29 @@ else
 	echo "Setting Up Staking Address.."
 fi
 
-#Adds a line to bulwark.conf to instruct the wallet to stake, if the line does not already exist.
+#If the line does not already exist, adds a line to bulwark.conf to instruct the wallet to stake
 if [ "tail ~/.bulwark/bulwark.conf" != "staking=1" ]; then
 	echo "staking=1" >> ~/.bulwark/bulwark.conf
 else
 	echo "Staking Already Active"
 fi
 
-#generates new address and assigns it a variable
+#Generates new address and assigns it a variable
 STAKINGADDRESS=$(bulwark-cli getnewaddress)
 
-#Ask for a password and apply it to a variable
-read -e -p "Please enter a password to encrypt your new address/wallet with (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : " ENCRYPTIONKEY
+#Ask for a password and apply it to a variable and confirm it.
+ENCRYPTIONKEY=1
+ENCRYPTIONKEYCONF=2
+until [ $ENCRYPTIONKEY = $ENCRYPTIONKEYCONF ]; do
+	read -e -p -s "Please enter a password to encrypt your new address/wallet with, you will not see what you type appear. (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : " ENCRYPTIONKEY
+	read -e -p -s "Please confirm your password : " ENCRYPTIONKEYCONF
+		if [ $ENCRYPTIONKEY != $ENCRYPTIONKEYCONF ]; then
+			echo "Your passwords do not match, please try again."
+		else
+			echo "Password set."
+		fi
+done
+
 
 #Encrypt the new address with the requested password
 BIP38=$(bulwark-cli bip38encrypt $STAKINGADDRESS $ENCRYPTIONKEY)
