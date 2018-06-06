@@ -22,7 +22,15 @@ sudo raspi-config nonint do_expand_rootfs
 sleep 1
 echo "Setting GPU memory..."
 sudo raspi-config nonint do_memory_split 16
+read -e -p "Would you like to set up your Secure Home Node with a staking? [N/y] : " STAKING
+if [[ ("$STAKING" == "y" || "$STAKING" == "Y") ]]; then
+	sudo wget https://raw.githubusercontent.com/bulwark-crypto/shn/staking/staking.sh
+	sudo chmod 777 staking.sh
+	clear
+else
 clear
+fi
+
 
 cat << EOL
 

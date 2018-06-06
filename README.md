@@ -92,14 +92,29 @@ Once you are logged in, run this line:
 bash <( wget -qO - https://raw.githubusercontent.com/bulwark-crypto/shn/master/prepare.sh )
 ```
 
-The installer will prepare some things, then ask you to change your password. After that, your Raspberry will reboot.
+The installer will prepare some things, ask if you would like to set up staking, then ask you to change your password. After that, your Raspberry will reboot.
 Wait for a minute, log into your Raspberry again, then run this command:
 
 ```
 sudo bash shn.sh
 ```
 
-Now the Secure Home Node will be installed. After a while, you will see the following line:
+Now the Secure Home Node will be installed. If you opted to activate staking you will see the below message eventually:
+
+```
+Please enter a password to encrypt your new staking address/wallet with, you will not see what you type appear. (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : 
+```
+
+Set yourself a password, and re-enter it to confirm it. As mentioned in the message keep this password safe. After staking has been setup you will find a file under:
+
+```
+/home/bulwark/.bulwark/StakingInfoReadMe.txt
+```
+
+This file will have further instructions to make using this staking address easier.
+
+
+After a while, you will see the following line:
 
 ```
 I will open the getinfo screen for you in watch mode now, close it with CTRL + C once we are fully synced.
@@ -126,6 +141,8 @@ bash <( curl https://raw.githubusercontent.com/bulwark-crypto/shn/master/update.
 ```
 ## Staking Setup
 
+If you didn't opt to set up staking on the initial setup of the device, and now wish to enable it, simple follow the instructions below.
+
 Once your bulwarkd service is completely synced, you can run the following command to create a wallet address for staking:
 
 ```
@@ -148,12 +165,18 @@ bulwark-cli getinfo
 
 to check on the current status of whether staking is working correctly.
 
-Furthermore, the script will output a address, and encryption key, which can be imported to your QT wallet using the BIP38 tool. This will allow you to use the address as part of your usual wallet while allowing the funds to be staked while the wallet is closed.
+Furthermore, the script will output a address, and encryption key, which can be imported to your QT wallet using the BIP38 tool, you can find all of this information under:
+
+```
+/home/bulwark/.bulwark/StakingInfoReadMe.txt
+```
+
+This will allow you to use the address as part of your usual wallet while allowing the funds to be staked while the wallet is closed.
 
 Alternatively, if you want to ensure your coins stay in the right address during use, you can use the address as "watch-only" by entering the following command in to your QT wallet debug console.
 
 ```
-importaddress ${STAKINGADDRESS} StakingRewards
+importaddress <StakingAddress> StakingRewards
 ```
 
 Finally, to remove your coins from this address, you can either add the address as described above with the BIP38 tool and send the funds to a new address via coin control, or you can use the below RPC command to create and send a transaction to a new address:

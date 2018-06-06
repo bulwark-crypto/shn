@@ -25,6 +25,12 @@ if ifconfig | grep wlan0 | grep RUNNING; then
   sudo sed -i s/psk=.*$/psk=$NEWPSK/g /etc/wpa_supplicant/wpa_supplicant.conf
 fi
 
+if [ -e staking.sh ]; then
+	STAKING=Y
+else
+	STAKING=N
+fi
+
 sudo apt-get -y update
 sleep 2
 sudo apt-get -y upgrade
@@ -258,6 +264,10 @@ until sudo su -c "bulwark-cli getinfo 2>/dev/null | grep 'balance' > /dev/null" 
     echo -en "${CHARS:$i:1}" "\r"
   done
 done
+
+if [ $STAKING = Y ]; then
+	source ~/staking.sh
+fi
 
 sudo su -c 'echo "masternodeprivkey=`sudo su -c "bulwark-cli -datadir=/home/bulwark/.bulwark -conf=/home/bulwark/.bulwark/bulwark.conf masternode genkey" bulwark`" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo su -c 'echo "masternode=1" >> /home/bulwark/.bulwark/bulwark.conf'

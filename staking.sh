@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Simple check to make sure the bulwarkd sync process is finished, so it isn't interrupted and forced to start over later.'
-echo "Checking Bulwarkd status. The script will begin once Bulwarkd has finished syncing. Please allow this process to finish."
+echo "Checking Bulwarkd status. The script will begin setting up staking once bulwarkd has finished syncing. Please allow this process to finish."
 until su -c "bulwark-cli mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\" : true' > /dev/null" $USER; do
   for (( i=0; i<${#CHARS}; i++ )); do
     sleep 2
@@ -31,7 +31,7 @@ STAKINGADDRESS=$(bulwark-cli getnewaddress)
 ENCRYPTIONKEY=1
 ENCRYPTIONKEYCONF=2
 until [ $ENCRYPTIONKEY = $ENCRYPTIONKEYCONF ]; do
-	read -e -p -s "Please enter a password to encrypt your new address/wallet with, you will not see what you type appear. (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : " ENCRYPTIONKEY
+	read -e -p -s "Please enter a password to encrypt your new staking address/wallet with, you will not see what you type appear. (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : " ENCRYPTIONKEY
 	read -e -p -s "Please confirm your password : " ENCRYPTIONKEYCONF
 		if [ $ENCRYPTIONKEY != $ENCRYPTIONKEYCONF ]; then
 			echo "Your passwords do not match, please try again."
@@ -61,8 +61,9 @@ systemctl start bulwarkd
 #Unlocks the wallet for a long time period
 bulwark-cli walletpassphrase $ENCRYPTIONKEY 9999999999 true
 
-#End message with further instructions
-cat << EOL
+#Write readme file with further info/instructions.
+touch ~/.bulwark/StakingInfoReadMe.txt
+cat > ~/.bulwark/StakingInfoReadMe.txt << EOL
 Your wallet has now been set up for staking, please send the coins you wish to stake to ${STAKINGADDRESS}. Once your wallet is synced your coins should begin staking automatically.
 
 To check on the status of your staked coins you can run "bulwark-cli getstakingstatus" and "bulwark-cli getinfo". To see when you receive your rewards from your QT wallet, you can also add a watch-only address from your debug console using "importaddress ${STAKINGADDRESS} StakingRewards".
@@ -75,6 +76,6 @@ Finally, to send the coins elsewhere if you no longer wish to stake them, use "b
 
 All of these instruction will be available from the Github page, and in the Bulwark Discord/Telegram on request!
 
-https://github.com/KaneoHunter/shn/blob/master/README.md#staking-setup
+https://github.com/KaneoHunter/shn/blob/staking/README.md#staking-setup
 
 EOL
