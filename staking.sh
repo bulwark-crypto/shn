@@ -76,7 +76,10 @@ You can also import the private key for this address in to your QT wallet using 
 
 ${BIP38}
 
-Finally, to send the coins elsewhere if you no longer wish to stake them, use "bulwark-cli sendfrom ${STAKINGADDRESS} <Address You Want To Send To> <Amount>" which will return the transaction hash.
+If your bulwarkd restarts, and you need to unlock your wallet again, use "bulwark-cli walletpassphrase ${ENCRYPTIONKEY} 9999999999 true"
+
+Finally, to send the coins elsewhere if you no longer wish to stake them, use "bulwark-cli walletpassphrase ${ENCRYPTIONKEY} 600 false" and then run "bulwark-cli sendfrom ${STAKINGADDRESS} <Address You Want To Send To> <Amount>" which will return the transaction hash to trace
+the transaction on a block explorer, and will automatically propagate the transaction around the network.
 
 All of these instruction will be available from the Github page, and in the Bulwark Discord/Telegram on request!
 
