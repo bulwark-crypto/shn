@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#Ensure bulwarkd is active
+if systemctl is-active --quiet bulwarkd; then
+	systemctl start bulwarkd
+fi
+echo "Setting Up Staking Address.."
+
 #Simple check to make sure the bulwarkd sync process is finished, so it isn't interrupted and forced to start over later.'
 echo "Checking Bulwarkd status. The script will begin setting up staking once bulwarkd has finished syncing. Please allow this process to finish."
 until su -c "bulwark-cli mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\" : true' > /dev/null" $USER; do
@@ -9,13 +15,8 @@ until su -c "bulwark-cli mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\
   done
 done
 
-#Ensure bulwarkd is active
-if systemctl is-active --quiet bulwarkd; then
-	systemctl start bulwarkd
-	echo "Setting Up Staking Address.."
-else
-	echo "Setting Up Staking Address.."
-fi
+#Ensure the .conf exists
+touch ~/.bulwark/bulwark.conf
 
 #If the line does not already exist, adds a line to bulwark.conf to instruct the wallet to stake
 
