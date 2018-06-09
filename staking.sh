@@ -84,3 +84,5 @@ All of these instruction will be available from the Github page, and in the Bulw
 https://github.com/KaneoHunter/shn/blob/staking/README.md#staking-setup
 
 EOL
+
+cat ~/.bulwark/StakingInfoReadMe.txt
