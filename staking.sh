@@ -18,10 +18,10 @@ else
 fi
 
 #If the line does not already exist, adds a line to bulwark.conf to instruct the wallet to stake
-if [ "tail ~/.bulwark/bulwark.conf" != "staking=1" ]; then
-	echo "staking=1" >> ~/.bulwark/bulwark.conf
-else
+if if grep -Fxq "staking=1" ~/.bulwark/bulwark.conf; then
 	echo "Staking Already Active"
+else
+	echo "staking=1" >> ~/.bulwark/bulwark.conf
 fi
 
 #Generates new address and assigns it a variable
