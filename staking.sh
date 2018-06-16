@@ -33,8 +33,8 @@ STAKINGADDRESS=$(bulwark-cli getnewaddress)
 ENCRYPTIONKEY=1
 ENCRYPTIONKEYCONF=2
 until [ $ENCRYPTIONKEY = $ENCRYPTIONKEYCONF ]; do
-	read -e -p -s "Please enter a password to encrypt your new staking address/wallet with, you will not see what you type appear. (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : " ENCRYPTIONKEY
-	read -e -p -s "Please confirm your password : " ENCRYPTIONKEYCONF
+	read -e -s -p "Please enter a password to encrypt your new staking address/wallet with, you will not see what you type appear. (KEEP THIS SAFE, THIS CANNOT BE RECOVERED) : " ENCRYPTIONKEY
+	read -e -s -p "Please confirm your password : " ENCRYPTIONKEYCONF
 		if [ $ENCRYPTIONKEY != $ENCRYPTIONKEYCONF ]; then
 			echo "Your passwords do not match, please try again."
 		else
