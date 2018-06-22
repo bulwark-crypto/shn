@@ -48,8 +48,7 @@ BIP38=$(bulwark-cli bip38encrypt $STAKINGADDRESS $ENCRYPTIONKEY)
 echo "Address successfully encrypted!"
 
 #Encrypt the wallet with the same password
-bulwark-cli encryptwallet $ENCRYPTIONKEY
-echo "Wallet successfully encrypted!"
+bulwark-cli encryptwallet $ENCRYPTIONKEY && echo "Wallet successfully encrypted!" || { echo "Encryption failed!"; exit; }
 
 #Wait for bulwarkd to close down after wallet encryption
 echo "Waiting for bulwarkd to restart..."
