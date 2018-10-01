@@ -3,11 +3,10 @@
 sudo apt -qqy install curl
 clear
 
-CHARS="/-\|"
-TARBALLURL=`curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep ARM | cut -d '"' -f 4`
-TARBALLNAME=`curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep ARM | cut -d '"' -f 4 | cut -d "/" -f 9`
-BWKVERSION=`curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep ARM | cut -d '"' -f 4 | cut -d "/" -f 8`
-BOOTSTRAPURL=`curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep bootstrap.dat.xz | grep browser_download_url | cut -d '"' -f 4`
+CHARS="/-\\|"
+TARBALLURL=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep ARM | cut -d '"' -f 4)
+TARBALLNAME=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep bulwark-node | grep ARM | cut -d '"' -f 4 | cut -d "/" -f 9)
+BOOTSTRAPURL=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep bootstrap.dat.xz | grep browser_download_url | cut -d '"' -f 4)
 BOOTSTRAPARCHIVE="bootstrap.dat.xz"
 # BWK-Dash variables.
 DASH_BIN_TAR="bwk-dash-1.0.0-linux-arm.tar.gz"
@@ -16,16 +15,16 @@ DASH_PORT="8080"
 DASH_VER="v1.0.0"
 
 if [ "$(id -u)" != "0" ]; then
-    echo "Sorry, this script needs to be run as root. Do \"sudo bash run.sh\""
+    echo "Sorry, this script needs to be run as root. Do \\"sudo bash run.sh\\""
     exit 1
 fi
 
 echo "Preparing installation..."
 if ifconfig | grep wlan0 | grep RUNNING; then
-  PSK=`sudo cat /etc/wpa_supplicant/wpa_supplicant.conf | grep -o -o 'psk=".*"' | cut -c 5- | sed 's/"//g'`
-  SSID=`sudo cat /etc/wpa_supplicant/wpa_supplicant.conf | grep -o -o 'ssid=".*"' | cut -c 6- | sed 's/"//g'`
-  NEWPSK=`wpa_passphrase $SSID $PSK | head -4 | tail -1 | cut -c 6-`
-  sudo sed -i s/psk=.*$/psk=$NEWPSK/g /etc/wpa_supplicant/wpa_supplicant.conf
+  PSK=$(sudo cat /etc/wpa_supplicant/wpa_supplicant.conf | grep -o -o 'psk=".*"' | cut -c 5- | sed 's/"//g')
+  SSID=$(sudo cat /etc/wpa_supplicant/wpa_supplicant.conf | grep -o -o 'ssid=".*"' | cut -c 6- | sed 's/"//g')
+  NEWPSK=$(wpa_passphrase "$SSID $PSK" | head -4 | tail -1 | cut -c 6-)
+  sudo sed -i s/psk=.*$/psk="$NEWPSK"/g /etc/wpa_supplicant/wpa_supplicant.conf
 fi
 
 sudo apt-get -y update
@@ -60,7 +59,7 @@ sudo sh -c 'echo "APT::Periodic::AutocleanInterval "7";" >> /etc/apt/apt.conf.d/
 sudo sh -c 'echo "APT::Periodic::Unattended-Upgrade "1";" >> /etc/apt/apt.conf.d/20auto-upgrades'
 sudo adduser --gecos "" bulwark --disabled-password > /dev/null
 sleep 1
-sudo cat > /etc/systemd/system/bulwarkd.service << EOL
+sudo tee /etc/systemd/system/bulwarkd.service << EOL
 [Unit]
 Description=Bulwarks's distributed currency daemon
 After=network.target
@@ -84,12 +83,12 @@ echo "# Bulwark settings" >> /home/bulwark/.profile
 sudo sh -c "echo 'GOPATH=/home/bulwark/go' >> /home/bulwark/.profile"
 sleep 1
 sudo mkdir /home/bulwark/.bulwark
-wget $BOOTSTRAPURL && xz -cd $BOOTSTRAPARCHIVE > /home/bulwark/.bulwark/bootstrap.dat && rm $BOOTSTRAPARCHIVE
+wget "$BOOTSTRAPURL" && xz -cd "$BOOTSTRAPARCHIVE" > /home/bulwark/.bulwark/bootstrap.dat && rm "$BOOTSTRAPARCHIVE"
 sudo touch /home/bulwark/.bulwark/bulwark.conf
 sudo chown -R bulwark:bulwark /home/bulwark/.bulwark
-RPCUSER=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
-RPCPASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-sudo cat > /home/bulwark/.bulwark/bulwark.conf << EOL
+RPCUSER=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
+RPCPASSWORD=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+sudo tee -a /home/bulwark/.bulwark/bulwark.conf << EOL
 rpcuser=${RPCUSER}
 rpcpassword=${RPCPASSWORD}
 daemon=1
@@ -106,7 +105,7 @@ sudo ufw allow ssh
 sleep 2
 sudo ufw allow from 127.0.0.1 to 127.0.0.1 port 52541
 sleep 2
-sudo ufw allow from `ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/' | awk -F"." '{print $1"."$2"."$3".0/24"}'` to any port 22
+sudo ufw allow from "$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/' | awk -F"." '{print $1"."$2"."$3".0/24"}')" to any port 22
 sleep 2
 
 sudo tee -a /etc/ufw/before.rules << EOL
@@ -126,13 +125,10 @@ if ! grep -q "ulimit -s 256" /etc/default/fail2ban; then
   sudo systemctl restart fail2ban
 fi
 
-sudo wget $TARBALLURL
+sudo wget "$TARBALLURL"
 sleep 2
-sudo tar -xzf $TARBALLNAME
-sudo mv bin bulwark
-sudo rm $TARBALLNAME
-cd bulwark
-sudo cp bulwark* /usr/local/bin
+sudo tar -xzf "$TARBALLNAME" --strip-components 1 -C /usr/local/bin
+sleep 2
 sudo sh -c 'echo "### TOR CONFIG ###" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo sh -c 'echo "onion=127.0.0.1:9050" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo sh -c 'echo "onlynet=tor" >> /home/bulwark/.bulwark/bulwark.conf'
@@ -173,7 +169,7 @@ ONION_ADDR=$( sudo cat /var/lib/tor/hidden_service/hostname )
 echo "Installing BWK-DASH"
 #BWK-Dash Setup - START
 # Setup systemd service and start.
-sudo cat > /etc/systemd/system/bwk-dash.service << EOL
+sudo tee /etc/systemd/system/bwk-dash.service << EOL
 [Unit]
 Description=Bulwark Home Node Dashboard
 After=network.target
@@ -214,7 +210,7 @@ sleep 1
 # Cleanup/enforce ownership.
 sudo chown -R bulwark:bulwark /home/bulwark/dash
 # Setup timer and service for bwk-cron.
-sudo cat > /etc/systemd/system/bwk-cron.service << EOL
+sudo tee /etc/systemd/system/bwk-cron.service << EOL
 [Unit]
 Description=Bulwark Home Node Dashboard - Cron
 After=network.target
@@ -228,7 +224,7 @@ TimeoutSec=10
 RestartSec=35
 EOL
 sleep 1
-sudo cat > /etc/systemd/system/bwk-cron.timer << EOL
+sudo tee /etc/systemd/system/bwk-cron.timer << EOL
 [Unit]
 Description=Bulwark Home Node Dashboard - Cron
 [Timer]
@@ -245,7 +241,7 @@ sudo systemctl enable bwk-dash.service
 #BWK-Dash Setup - END
 sleep 1
 
-cd ~
+cd ~ || exit 1
 sudo mv /home/pi/bulwark /home/bulwark/
 sudo chown -R bulwark:bulwark /home/bulwark/bulwark/
 sleep 1
@@ -258,13 +254,13 @@ echo "Starting up bulwarkd, please wait"
 until sudo su -c "bulwark-cli getinfo 2>/dev/null | grep 'balance' > /dev/null" bulwark; do
   for (( i=0; i<${#CHARS}; i++ )); do
     sleep 2
-    echo -en "${CHARS:$i:1}" "\r"
+    echo -en "${CHARS:$i:1}" "\\r"
   done
 done
 
 sudo su -c 'echo "masternodeprivkey=`sudo su -c "bulwark-cli -datadir=/home/bulwark/.bulwark -conf=/home/bulwark/.bulwark/bulwark.conf masternode genkey" bulwark`" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo su -c 'echo "masternode=1" >> /home/bulwark/.bulwark/bulwark.conf'
-sudo echo "externalip=`sudo cat /var/lib/tor/hidden_service/hostname`" >> /home/bulwark/.bulwark/bulwark.conf
+sudo tee -a "externalip=$(sudo cat /var/lib/tor/hidden_service/hostname)" /home/bulwark/.bulwark/bulwark.conf
 echo ""
 echo "I will open the getinfo screen for you in watch mode now, close it with CTRL + C once we are fully synced."
 sleep 20
@@ -293,7 +289,7 @@ echo "Wifi Password hashed:"
 sudo cat /etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk='
 echo ""
 echo "Local Wallet masternode.conf file:"
-echo TORNODE $(sudo cat /var/lib/tor/hidden_service/hostname):52543 $(sudo grep -Po '(?<=masternodeprivkey=).*' /home/bulwark/.bulwark/bulwark.conf) $(echo "YOURTXINHERE")
+echo TORNODE "$(sudo cat /var/lib/tor/hidden_service/hostname):52543 $(sudo grep -Po '(?<=masternodeprivkey=).*' /home/bulwark/.bulwark/bulwark.conf)" "$YOURTXINHERE"
 echo ""
 echo "Important Other Infos:"
 echo ""
@@ -307,13 +303,13 @@ echo "Stop daemon: sudo systemctl stop bulwarkd.service"
 echo "Check bulwarkd status: bulwark-cli getinfo"
 echo "Check masternode status: bulwark-cli masternode status"
 echo ""
-echo "BWK-Dash address: http://`ifconfig | grep "inet " | grep -v -m1 "127.0.0.1" | awk '{print $2}'`"
+echo "BWK-Dash address: http://$(ifconfig | grep "inet " | grep -v -m1 "127.0.0.1" | awk '{print $2}')"
 sleep 5
 echo ""
 echo "Adding bulwark-cli shortcut to ~/.profile"
 echo "alias bulwark-cli='sudo bulwark-cli -config=/home/bulwark/.bulwark/bulwark.conf -datadir=/home/bulwark/.bulwark'" >> /home/pi/.profile
 echo "Installation finished."
-read -p "Press Enter to continue, the system will reboot."
+read -rp "Press Enter to continue, the system will reboot."
 sudo rm -rf shn.sh
 sudo su -c "cd /home/bulwark/dash && /usr/local/bin/bwk-cron"
 sudo chown -R bulwark:bulwark /home/bulwark/dash
