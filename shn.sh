@@ -129,6 +129,8 @@ sudo wget "$TARBALLURL"
 sleep 2
 sudo tar -xzf "$TARBALLNAME" --strip-components 1 -C /usr/local/bin
 sleep 2
+sudo rm "$TARBALLNAME"
+sleep 2
 sudo sh -c 'echo "### TOR CONFIG ###" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo sh -c 'echo "onion=127.0.0.1:9050" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo sh -c 'echo "onlynet=tor" >> /home/bulwark/.bulwark/bulwark.conf'
