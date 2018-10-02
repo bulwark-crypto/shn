@@ -19,7 +19,7 @@ echo "Shutting down masternode..."
 sudo systemctl stop bulwarkd
 
 echo "Installing Bulwark $BWKVERSION..."
-rm /usr/local/bin/bulwark*
+sudo rm /usr/local/bin/bulwark*
 wget "$TARBALLURL"
 sudo tar -xzvf "$TARBALLNAME" -C /usr/local/bin
 rm "$TARBALLNAME"
@@ -39,11 +39,9 @@ clear
 
 echo "Your masternode is syncing. Please wait for this process to finish."
 
-until sudo su -c "bulwark-cli mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\" : true' > /dev/null" bulwark; do
-  for (( i=0; i<${#CHARS}; i++ )); do
-    sleep 2
-    echo -en "${CHARS:$i:1}" "\\r"
-  done
+until su -c "bulwark-cli mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\": true' > /dev/null" bulwark; do 
+  echo -ne "Current block: $(su -c "bulwark-cli getblockcount" bulwark)\\r"
+  sleep 1
 done
 
 clear
