@@ -244,8 +244,6 @@ sudo systemctl enable bwk-dash.service
 sleep 1
 
 cd ~ || exit 1
-sudo mv /home/pi/bulwark /home/bulwark/
-sudo chown -R bulwark:bulwark /home/bulwark/bulwark/
 sleep 1
 sudo systemctl enable bulwarkd.service
 sleep 1
@@ -262,7 +260,7 @@ done
 
 sudo su -c 'echo "masternodeprivkey=`sudo su -c "bulwark-cli -datadir=/home/bulwark/.bulwark -conf=/home/bulwark/.bulwark/bulwark.conf masternode genkey" bulwark`" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo su -c 'echo "masternode=1" >> /home/bulwark/.bulwark/bulwark.conf'
-sudo tee -a "externalip=$(sudo cat /var/lib/tor/hidden_service/hostname)" /home/bulwark/.bulwark/bulwark.conf
+sudo su -c 'echo "externalip=$(sudo cat /var/lib/tor/hidden_service/hostname)" >> /home/bulwark/.bulwark/bulwark.conf'
 echo ""
 echo "I will open the getinfo screen for you in watch mode now, close it with CTRL + C once we are fully synced."
 sleep 20
