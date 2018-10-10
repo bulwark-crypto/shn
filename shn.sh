@@ -49,6 +49,8 @@ sudo apt-get install git -y
 sleep 3
 sudo apt install xz-utils -y
 sleep 3
+sudo apt install jq -y
+sleep 3
 sudo wget --directory-prefix=/etc/fail2ban/ https://raw.githubusercontent.com/bulwark-crypto/shn/master/jail.local
 sudo apt install unattended-upgrades -y
 sleep 3
@@ -262,9 +264,16 @@ sudo su -c 'echo "masternodeprivkey=`sudo su -c "bulwark-cli -datadir=/home/bulw
 sudo su -c 'echo "masternode=1" >> /home/bulwark/.bulwark/bulwark.conf'
 sudo su -c 'echo "externalip=$(sudo cat /var/lib/tor/hidden_service/hostname)" >> /home/bulwark/.bulwark/bulwark.conf'
 echo ""
-echo "I will open the getinfo screen for you in watch mode now, close it with CTRL + C once we are fully synced."
-sleep 20
-watch bulwark-cli -datadir=/home/bulwark/.bulwark -conf=/home/bulwark/.bulwark/bulwark.conf getinfo
+
+clear
+
+until sudo su -c "bulwark-cli mnsync status 2>/dev/null" bulwark | jq '.IsBlockchainSynced' | grep -q true; do
+  echo -ne "Current block: $(sudo su -c "bulwark-cli getinfo" bulwark | jq '.blocks')\\r"
+  sleep 1
+done
+
+clear 
+
 echo "Daemon Status:"
 sudo systemctl status bulwarkd.service | sed -n -e 's/^.*Active: //p'
 echo ""

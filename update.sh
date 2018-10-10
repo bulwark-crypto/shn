@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt -qqy install curl
+sudo apt -qqy install curl jq
 clear
 
 TARBALLURL=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep -e "bulwark-node.*ARM" | cut -d '"' -f 4)
@@ -37,8 +37,8 @@ clear
 
 echo "Your masternode is syncing. Please wait for this process to finish."
 
-until sudo su -c "bulwark-cli mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\": true' > /dev/null" bulwark; do 
-  echo -ne "Current block: $(sudo su -c "bulwark-cli getblockcount" bulwark)\\r"
+until sudo su -c "bulwark-cli mnsync status 2>/dev/null" bulwark | jq '.IsBlockchainSynced' | grep -q true; do
+  echo -ne "Current block: $(sudo su -c "bulwark-cli getinfo" bulwark | jq '.blocks')\\r"
   sleep 1
 done
 
