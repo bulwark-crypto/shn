@@ -15,7 +15,7 @@ DASH_PORT="8080"
 DASH_VER="v1.0.0"
 
 if [ "$(id -u)" != "0" ]; then
-    echo "Sorry, this script needs to be run as root. Do \\"sudo bash run.sh\\""
+    echo "Sorry, this script needs to be run as root - sudo bash shn.sh"
     exit 1
 fi
 
