@@ -64,7 +64,7 @@ sleep 1
 sudo tee /etc/systemd/system/bulwarkd.service << EOL
 [Unit]
 Description=Bulwarks's distributed currency daemon
-After=network.target
+After=network-online.target
 [Service]
 Type=forking
 User=bulwark
@@ -174,7 +174,7 @@ echo "Installing BWK-DASH"
 sudo tee /etc/systemd/system/bwk-dash.service << EOL
 [Unit]
 Description=Bulwark Home Node Dashboard
-After=network.target
+After=network-online.target
 [Service]
 User=bulwark
 Group=bulwark
@@ -215,7 +215,7 @@ sudo chown -R bulwark:bulwark /home/bulwark/dash
 sudo tee /etc/systemd/system/bwk-cron.service << EOL
 [Unit]
 Description=Bulwark Home Node Dashboard - Cron
-After=network.target
+After=network-online.target
 [Service]
 User=bulwark
 Group=bulwark
