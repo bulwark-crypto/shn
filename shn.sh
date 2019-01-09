@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt -qqy install curl
+sudo apt -qqy install curl jq
 clear
 
 CHARS="/-\\|"
@@ -269,6 +269,43 @@ until sudo su -c "bulwark-cli mnsync status 2>/dev/null" bulwark | jq '.IsBlockc
   echo -ne "Current block: $(sudo su -c "bulwark-cli getinfo" bulwark | jq '.blocks')\\r"
   sleep 1
 done
+
+clear
+
+echo "Installing Bulwark Autoupdater..."
+rm -f /usr/local/bin/bulwarkupdate
+curl -o /usr/local/bin/bulwarkupdate https://raw.githubusercontent.com/bulwark-crypto/shn/master/bulwarkupdate
+chmod a+x /usr/local/bin/bulwarkupdate
+
+if [ ! -f /etc/systemd/system/bulwarkupdate.service ]; then
+cat > /etc/systemd/system/bulwarkupdate.service << EOL
+[Unit]
+Description=Bulwarks's Masternode Autoupdater
+After=network-online.target
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=${USERHOME}
+ExecStart=/usr/local/bin/bulwarkupdate
+EOL
+fi
+
+if [ ! -f /etc/systemd/system/bulwarkupdate.timer ]; then
+cat > /etc/systemd/system/bulwarkupdate.timer << EOL
+[Unit]
+Description=Bulwarks's Masternode Autoupdater Timer
+
+[Timer]
+OnBootSec=1d
+OnUnitActiveSec=1d 
+
+[Install]
+WantedBy=timers.target
+EOL
+fi
+
+systemctl enable bulwarkupdate.timer
+systemctl start bulwarkupdate.timer
 
 clear 
 

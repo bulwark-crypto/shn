@@ -7,6 +7,14 @@ TARBALLURL=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/release
 TARBALLNAME=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep -e "bulwark-node.*ARM" | cut -d '"' -f 4 | cut -d "/" -f 9)
 BWKVERSION=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | grep browser_download_url | grep -e "bulwark-node.*ARM" | cut -d '"' -f 4 | cut -d "/" -f 8)
 
+LOCALVERSION=$(bulwark-cli --version | cut -d " " -f 6)
+REMOTEVERSION=$(curl -s https://api.github.com/repos/bulwark-crypto/bulwark/releases/latest | jq -r ".tag_name")
+
+if [[ "$LOCALVERSION" = "$REMOTEVERSION" ]]; then
+  echo "No update necessary."
+  exit
+fi
+
 clear
 echo "This script will update your Secure Home Node to version $BWKVERSION"
 echo "It must be run as the 'pi' user."
@@ -41,6 +49,43 @@ until sudo su -c "bulwark-cli mnsync status 2>/dev/null" bulwark | jq '.IsBlockc
   echo -ne "Current block: $(sudo su -c "bulwark-cli getinfo" bulwark | jq '.blocks')\\r"
   sleep 1
 done
+
+clear
+
+echo "Installing Bulwark Autoupdater..."
+rm -f /usr/local/bin/bulwarkupdate
+curl -o /usr/local/bin/bulwarkupdate https://raw.githubusercontent.com/bulwark-crypto/Bulwark-MN-Install/master/bulwarkupdate
+chmod a+x /usr/local/bin/bulwarkupdate
+
+if [ ! -f /etc/systemd/system/bulwarkupdate.service ]; then
+cat > /etc/systemd/system/bulwarkupdate.service << EOL
+[Unit]
+Description=Bulwarks's Masternode Autoupdater
+After=network-online.target
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=${USERHOME}
+ExecStart=/usr/local/bin/bulwarkupdate
+EOL
+fi
+
+if [ ! -f /etc/systemd/system/bulwarkupdate.timer ]; then
+cat > /etc/systemd/system/bulwarkupdate.timer << EOL
+[Unit]
+Description=Bulwarks's Masternode Autoupdater Timer
+
+[Timer]
+OnBootSec=1d
+OnUnitActiveSec=1d 
+
+[Install]
+WantedBy=timers.target
+EOL
+fi
+
+systemctl enable bulwarkupdate.timer
+systemctl start bulwarkupdate.timer
 
 clear
 
